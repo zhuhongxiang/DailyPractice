@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script type="text/javaScript">
+    function Man() {
+  this.sleep = (delay) => {
+    const now = new Date().getTime;
+    while (new Date().getTime - now < delay) {
+      continue
+    }
+    return this;
+
+/*     setTimeout(() => {
+      console.log('延时');
+      return this;
+    }, delay); */
+  };
+  this.sayHi = function () {
+    console.log('Hi');
+    return this;
+  };
+}
+
+let a = new Man();
+a.sleep(3000).sayHi().sleep(1000).sleep(2000).sayHi();
+
+  </script>
+</head>
+<body>
+  
+</body>
+</html>
