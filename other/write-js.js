@@ -1,7 +1,7 @@
 //01.数组扁平化
 //数组扁平化是指将一个多维数组变为一个一维数组
 function ques1() {
-  const arr = [1, [2, [3, [4, 5]]], 6];
+  const arr = [1, [2, [3, [3, 5]]], 6];
   // => [1, 2, 3, 4, 5, 6]
   //自己解用的方法：正则/函数递归
   const res = JSON.parse('[' + JSON.stringify(arr).replace(/\[|\]/g, '') + ']');
@@ -155,6 +155,17 @@ function ques4() {
   return res;
 }; */
 
+Function.prototype.apply = function (context = window, args) {
+  if (typeof context !== 'function') {
+    throw new TypeError('type error');
+  }
+  const fn = Symbol('fn');
+  context[fn] = this;
+
+  const res = context[fn](...args);
+  delete context[fn];
+  return res;
+};
 //07.实现数组的filter函数
 /* Array.prototype.filter = function (callback, thisArg) {
   if (this == undefined) {
@@ -201,7 +212,7 @@ function ques4() {
   return res;
 }; */
 
-//09.实现数组的map函数
+//09.实现数组的forEach函数
 /* Array.prototype.forEach = function (callback, thisArg) {
   if (this == null) {
     throw new TypeError('this is null or not defined');
@@ -285,6 +296,19 @@ function newOperator(ctor, ...args) {
   return isObject || isFunction ? res : obj;
 }
 
+function createNew(context, ...args) {
+  if (typeof context !== 'function') {
+    throw new TypeError('type error');
+  }
+
+  const obj = Object.create(context.prototype);
+  const res = context.apply(obj, args);
+
+  const isObject = typeof res === 'object' && res !== null;
+  const isFunction = typeof res === 'function' ? res : obj;
+  return isObject || isFunction ? res : obj;
+}
+
 //13.instanceof
 //instanceof运算符用于检测构造函数的prototype属性是否出现在某个实例对象的原型链上。
 const myInstanceof = (left, right) => {
@@ -300,6 +324,18 @@ const myInstanceof = (left, right) => {
     if (proto === right.prototype) {
       return true;
     }
+    proto = Object.getPrototypeOf(proto);
+  }
+};
+
+const newInstanceof = (left, right) => {
+  if (typeof left !== 'object' || !left) {
+    return false;
+  }
+  let proto = Object.getPrototypeOf(left);
+  while (true) {
+    if (proto === null) return false;
+    if (proto === right.prototype) return true;
     proto = Object.getPrototypeOf(proto);
   }
 };
@@ -551,7 +587,7 @@ Promise.race = function (promiseArr) {
 };
 
 //完整版本
-class Promise {
+/* class Promise {
   constructor(exector) {
     // 初始化状态
     this.status = PENDING;
@@ -706,4 +742,5 @@ class Promise {
       });
     });
   }
-}
+} */
+ques1();

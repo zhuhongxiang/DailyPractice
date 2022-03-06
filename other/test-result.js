@@ -10,6 +10,8 @@ function b() {
   console.log('call b second');
 } */
 
+const { has } = require('core-js/core/dict');
+
 // 1-2：
 /* var a = 99; // 全局变量a
 f(); // f是函数，虽然定义在调用的后面，但是函数声明会提升到作用域的顶部。
@@ -332,3 +334,289 @@ teacher.showName(); */
 
 let a = new Man();
 a.sleep(3000).sayHi().sleep(1000).sleep(2000).sayHi(); */
+
+/* function Animal(name) {
+  this.name = name || 'Animal';
+  this.sleep = function () {
+    console.log(this.name + '正在睡觉');
+  };
+}
+Animal.prototype.eat = function (food) {
+  console.log(this.name + ' 正在吃 ' + food);
+};
+function Cat(name) {
+  //构造继承
+  Animal.apply(this);
+  this.name = name || 'cat';
+}
+//原型链继承
+// Cat.prototype = new Animal();
+//寄生组合继承
+Cat.prototype = new Animal();
+Cat.prototype.constructor = Cat;
+function ques14() {
+  //　Test Code
+  var cat = new Cat();
+  cat.name = 'cat';
+  console.log(cat.name);
+  cat.eat('fish');
+  cat.sleep();
+} */
+
+//Object.is
+/* function is(x, y) {
+  if (x === y) {
+    return x !== 0 || y !== 0 || 1 / x === 1 / y;
+  } else {
+    return x !== x && y !== y;
+  }
+} */
+
+// 16.Object.assign
+// Object.assign()方法用于将所有可枚举属性的值从一个或多个源对象复制到目标对象。它将返回目标对象（请注意这个操作是浅拷贝）
+/* Object.defineProperty(Object, 'assign', {
+  value: function (target, ...args) {
+    if (target === null) {
+      throw new TypeError('cannot convert null to object');
+    }
+    // 目标对象需要统一是引用数据类型，若不是会自动转换
+    const to = Object(target);
+    for (let i = 0; i < args.length; i++) {
+      sourceKeys = args[i];
+      if (sourceKeys !== null) {
+        for (const nextkey in sourceKeys) {
+          if (Object.prototype.hasOwnProperty.call(sourceKeys, nextkey)) {
+            to[nextkey] = sourceKeys[nextkey];
+          }
+        }
+      }
+    }
+    return to;
+  },
+  enumerable: false,
+  writable: true,
+  configurable: true
+}); */
+
+const PENDDING = 'PENDDING';
+const FULLFILLED = 'FULFILLED';
+const REJECTED = 'REJECTED';
+
+class Promise {
+  constructor(exector) {
+    this.state = PENDDING;
+    this.value = undefined;
+    this.reason = undefined;
+
+    const reslove = (value) => {
+      if (this.state === PENDDING) {
+        this.state = FULLFILLED;
+        this.value = value;
+      }
+    };
+    const reject = (reason) => {
+      if (this.state === PENDDING) {
+        this.state = REJECTED;
+        this.reason = reason;
+      }
+    };
+    try {
+      exector(reslove, reject);
+    } catch (e) {
+      reject(e);
+    }
+  }
+}
+
+Promise.prototype.all = function (promiseArr) {
+  const promises = Array.from(promiseArr);
+  return new Promise((reslove, reject) => {
+    if (promises.length === 0) {
+      reslove([]);
+    } else {
+      for (let i = 0; i < promises.length; i++) {
+        const result = [];
+        let index = 0;
+        Promise.reslove(promises[i]).then(
+          (data) => {
+            result[i] = data;
+            if (++index === promiseArr.length) {
+              reslove(result);
+            }
+          },
+          (err) => {
+            reject(err);
+          }
+        );
+      }
+    }
+  });
+};
+
+Promise.prototype.race = function (promiseArr) {
+  const promises = Array.from(promiseArr);
+  return new Promise((reslove, reject) => {
+    for (let i = 0; i < promises.length; i++) {
+      Promise.reslove(promises[i]).then(
+        (data) => {
+          reslove(data);
+        },
+        (err) => {
+          reject(err);
+        }
+      );
+    }
+  });
+};
+
+//防抖，非立即执行
+function debounce1(func, wait) {
+  let timeout;
+  return function () {
+    let self = this;
+    let args = arguments;
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+    timeout = setTimeout(() => {
+      func.apply(self, args);
+    }, wait);
+  };
+}
+//立即执行
+function debounce2(func, wait) {
+  let timeout;
+  return function () {
+    let self = this;
+    let args = arguments;
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+    let callnow = !timeout;
+    timeout = setTimeout(() => {
+      timeout = null;
+    }, wait);
+    if (callnow) {
+      func.apply(self, args);
+    }
+  };
+}
+
+//合并版
+function debounce(func, wait, immediate) {
+  let timeout;
+  return function () {
+    let self = this;
+    let args = arguments;
+    if (timeout) clearTimeout(timeout);
+    if (immediate) {
+      let callnow = !timeout;
+      timeout = setTimeout(() => {
+        timeout = null;
+      }, wait);
+      if (callnow) func.apply(self, args);
+    } else {
+      timeout = setTimeout(() => {
+        func.apply(self, args);
+      }, wait);
+    }
+  };
+}
+
+//节流，时间戳版
+function throttle1(func, wait) {
+  let previous = 0;
+  return function () {
+    let now = Date.now();
+    let context = this;
+    let args = arguments;
+    if (now - previous > wait) {
+      func.apply(context, args);
+      previous = now;
+    }
+  };
+}
+
+//定时器版
+function throttle2(func, wait) {
+  let timeout;
+  return function () {
+    let context = this;
+    let args = arguments;
+    if (!timeout) {
+      timeout = setTimeout(() => {
+        timeout = null;
+        func.apply(context, args);
+      }, wait);
+    }
+  };
+}
+
+//合并版
+/**
+ * @desc 函数节流
+ * @param func 函数
+ * @param wait 延迟执行毫秒数
+ * @param type 1 表时间戳版，2 表定时器版
+ */
+function throttle(func, wait, type) {
+  if (type === 1) {
+    var previous = 0;
+  } else if (type === 2) {
+    var timeout;
+  }
+  return function () {
+    let context = this;
+    let args = arguments;
+    if (type === 1) {
+      let now = Date.now();
+      if (now - previous > wait) {
+        func.apply(context, args);
+        previous = now;
+      }
+    } else if (type === 2) {
+      if (!timeout) {
+        timeout = setTimeout(() => {
+          timeout = null;
+          func.apply(context, this);
+        }, wait);
+      }
+    }
+  };
+}
+
+function createElement(vnode) {
+  const tag = vnode.tag;
+  const attrs = vnode.attrs || {};
+  const children = vnode.children || [];
+
+  if (!tag) {
+    return;
+  }
+
+  let elem = document.createElement(tag);
+
+  for (const attr in attrs) {
+    if (attrs.hasOwnProperty(attr)) {
+      elem.setAttribute(attr, attrs[attr]);
+    }
+  }
+  children.forEach((child) => {
+    children.appendChild(createElement(child));
+  });
+  return elem;
+}
+
+function updateChild(vnode, newVnode) {
+  oldChildren = vnode.children || [];
+  newChildren = newVnode.children || [];
+
+  oldChildren.forEach((child, index) => {
+    let newNodeChild = newChildren[index];
+    if (child.tag === newNodeChild.tag) {
+      updateChild(child, newNodeChild);
+    } else {
+      replaceChild(child, newNodeChild);
+    }
+  });
+}
