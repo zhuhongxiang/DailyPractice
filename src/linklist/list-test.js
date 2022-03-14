@@ -294,6 +294,38 @@ const sortList = (head) => {
   return l3.next;
 };
 
+const sortList2 = (head) => {
+  if (!head || !head.next) {
+    return head;
+  }
+  let fast = head.next;
+  let low = head;
+  while (fast && fast.next) {
+    fast = fast.next.next;
+    low = low.next;
+  }
+  let newHead = low.next;
+  low.next = null;
+
+  let l1 = sortList2(head);
+  let l2 = sortList2(newHead);
+
+  let l3 = new ListNode(-1);
+  let c3 = l3;
+  while (l1 !== null && l2 !== null) {
+    if (l1.val <= l2.val) {
+      c3.next = l1;
+      l1 = l1.next;
+    } else {
+      c3.next = l2;
+      l2 = l2.next;
+    }
+    c3 = c3.next;
+  }
+  c3.next = l1 === null ? l2 : l1;
+  return l3.next;
+};
+
 //返回一个不要求升序的链表，实现链表数组拆分拼接
 //思路：
 // 使用Array.flat(Infinity)拉平数组，遍历数组内的链表创建新的链表
@@ -410,6 +442,40 @@ var mergeKLists = function (lists) {
   return mergeLists(lists, 0, lists.length);
 };
 
+const mergeKLists2 = (lists) => {
+  if (!lists.length) {
+    return null;
+  }
+
+  const merge = (l1, l2) => {
+    const l3 = new ListNode(-1);
+    const c3 = l3;
+    while (l1 && l2) {
+      if (l1.val <= l2.val) {
+        c3.next = l1.next;
+        l1 = l1.next;
+      } else {
+        c3.next = l2.next;
+        l2 = l2.next;
+      }
+      c3 = c3.next;
+    }
+    c3.next = l1 === null ? l2 : l1;
+    return l3.next;
+  };
+
+  const mergeLists = (lists, start, end) => {
+    if (start + 1 == end) {
+      return lists[start];
+    }
+    let mid = (start + end) >> 1;
+    const head1 = mergeLists(lists, start, mid);
+    const head2 = mergeLists(lists, mid + 1, end);
+    return merge(head1, head2);
+  };
+  return mergeKLists(lists, 0, lists.length);
+};
+
 /* 9.删除链表的倒数第 n 个节点
 给定一个链表，删除链表的倒数第 n 个节点，并且返回链表的头结点。
 
@@ -490,6 +556,37 @@ var addTwoNumbers = function (l1, l2) {
     }
   }
   return l3;
+};
+
+const addTwoNumbers = (l1, l2) => {
+  let list1 = l1;
+  let list2 = l2;
+  let l3;
+  let c3;
+  let add = 0;
+  while (list1 || list2 || add) {
+    let value1 = 0;
+    let value2 = 0;
+    let sum = 0;
+    if (list1) {
+      value1 = list1.val;
+      list1 = list1.next;
+    }
+    if (list2) {
+      value2 = list2.val;
+      list2 = list2.next;
+    }
+    sum = value1 + value2 + add;
+    add = Math.floor(sum / 10);
+    if (!c3) {
+      l3 = new ListNode(Math.floor(sum % 10));
+      c3 = l3;
+    } else {
+      c3.next = new ListNode(Math.floor(sum % 10));
+      c3 = c3.next;
+    }
+  }
+  return l3.next;
 };
 
 /* 10.环形链表

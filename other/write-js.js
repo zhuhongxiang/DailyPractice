@@ -279,6 +279,17 @@ function add() {
   return fn;
 }
 
+function add2() {
+  let _args = [...arguments];
+  function fn() {
+    _args.push(...arguments);
+    return fn;
+  }
+  fn.toString = () => {
+    return _args.reduce((sum, cur) => sum + cur);
+  };
+  return fn;
+}
 //12.模拟new操作
 /* 3个步骤：
 1. 以ctor.prototype为原型创建一个对象。
@@ -297,15 +308,15 @@ function newOperator(ctor, ...args) {
 }
 
 function createNew(context, ...args) {
-  if (typeof context !== 'function') {
+  if (typeof context !== 'object') {
     throw new TypeError('type error');
   }
-
   const obj = Object.create(context.prototype);
   const res = context.apply(obj, args);
 
   const isObject = typeof res === 'object' && res !== null;
-  const isFunction = typeof res === 'function' ? res : obj;
+  const isFunction = typeof res === 'function';
+
   return isObject || isFunction ? res : obj;
 }
 
@@ -743,4 +754,34 @@ Promise.race = function (promiseArr) {
     });
   }
 } */
-ques1();
+
+//寄生组合继承
+function Animal(name) {
+  this.name = name || 'Animal';
+  this.sleep = () => {
+    console.log(this.name + '正在睡觉');
+  };
+}
+
+Animal.prototype.eat = function (food) {
+  console.log(this.name + '正在吃：' + food);
+};
+
+function Cat(name) {
+  Animal.call(this);
+  this.name = name || 'Cat';
+}
+function toPrototype(subType, supType) {
+  function F() {}
+  F.prototype = supType.prototype;
+  subType.prototype = new F();
+  subType.prototype.constructor = subType;
+}
+
+toPrototype(Cat, Animal);
+function ques18() {
+  var cat = new Cat('cat');
+  console.log(cat.name);
+  cat.eat('fish');
+  cat.sleep();
+}

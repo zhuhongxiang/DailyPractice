@@ -91,6 +91,17 @@ var postordertraversal = function (root, array = []) {
   array.push(root.val);
 };
 
+var postordertraversal = (root) => {
+  const arr = [];
+  const postorder = (root) => {
+    if (!root) return null;
+    postorder(root.left);
+    postorder(root.right);
+    arr.push(root.val);
+  };
+  return postorder(root);
+};
+
 var postordertraversal = function (root) {
   const result = [];
   const stack = [];
@@ -176,4 +187,57 @@ const test = (array, start, end) => {
     if (array[j] >= array[end]) return false;
   }
   return test(array, start, i) && test(array, i, end - 1);
+};
+
+//剑指 Offer 26. 树的子结构
+/* 输入两棵二叉树A和B，判断B是不是A的子结构。(约定空树不是任意一个树的子结构)
+
+B是A的子结构， 即 A中有出现和B相同的结构和节点值。 */
+// 自己思考的方法
+var isSubStructure = function (A, B) {
+  if (!B) return false;
+
+  const compareTree = (l1, l2) => {
+    if (!l1 || !l2) return false;
+    let isSon = false;
+    if (l1.val === l2.val) {
+      isSon = true;
+      if (l2.left) {
+        isSon = compareTree(l1.left, l2.left);
+      }
+      if (l2.right) {
+        isSon = compareTree(l1.right, l2.right);
+      }
+    }
+    return isSon;
+  };
+  const travelTree = (l1, l2) => {
+    if (!l1) return false;
+    if (compareTree(l1, l2)) {
+      return true;
+    }
+    if (l1.left && travelTree(l1.left, l2)) {
+      return true;
+    }
+    if (l1.right && travelTree(l1.right, l2)) {
+      return true;
+    }
+    return false;
+  };
+  return travelTree(A, B);
+};
+
+//官方解题思路
+var isSubStructure = function (A, B) {
+  if (!A || !B) return false;
+
+  const compareTree = (l1, l2) => {
+    if (!l2) return true;
+    if (!l1 || l1.val !== l2.val) return false;
+    return compareTree(l1.left, l2.left) && compareTree(l1.right, l2.right);
+  };
+
+  return (
+    compareTree(A, B) || isSubStructure(A.left, B) || isSubStructure(A.right, B)
+  );
 };

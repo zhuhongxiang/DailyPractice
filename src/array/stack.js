@@ -70,20 +70,22 @@ function mulBase(num, base) {
   return converted;
 }
 
-const num = 32;
-const base = 2;
+function ques1() {
+  const num = 32;
+  const base = 2;
 
-let newNum = mulBase(num, base);
-//32 converted to base 2 is 100000
-console.log(num + ' converted to base ' + base + ' is ' + newNum);
+  let newNum = mulBase(num, base);
+  //32 converted to base 2 is 100000
+  console.log(num + ' converted to base ' + base + ' is ' + newNum);
 
-const num2 = 125;
-const base2 = 8;
+  const num2 = 125;
+  const base2 = 8;
 
-let newNum2 = mulBase(num2, base2);
+  let newNum2 = mulBase(num2, base2);
 
-//125 converted to base 8 is 175
-console.log(num2 + ' converted to base ' + base2 + ' is ' + newNum2);
+  //125 converted to base 8 is 175
+  console.log(num2 + ' converted to base ' + base2 + ' is ' + newNum2);
+}
 
 /* 2.回文。
 
@@ -114,18 +116,20 @@ function isPalindrome(word) {
   }
 }
 
-const word = 'hello';
-if (isPalindrome(word)) {
-  console.log(word + ' 是回文的');
-} else {
-  console.log(word + ' 不是回文的');
-}
+function ques2() {
+  const word = 'hello';
+  if (isPalindrome(word)) {
+    console.log(word + ' 是回文的');
+  } else {
+    console.log(word + ' 不是回文的');
+  }
 
-const word2 = 'racecar';
-if (isPalindrome(word2)) {
-  console.log(word2 + ' 是回文的');
-} else {
-  console.log(word2 + ' 不是回文的');
+  const word2 = 'racecar';
+  if (isPalindrome(word2)) {
+    console.log(word2 + ' 是回文的');
+  } else {
+    console.log(word2 + ' 不是回文的');
+  }
 }
 
 /* 3. 递归演示；
@@ -158,4 +162,99 @@ function factorialStack(n) {
   return count;
 }
 
-console.log(factorialStack(5));
+function ques3() {
+  console.log(factorialStack(5));
+}
+
+class Stack2 {
+  constructor() {
+    this.dataStack = [];
+    this.minStack = [];
+  }
+  push(num) {
+    if (this.dataStack.length === 0) {
+      this.dataStack.push(num);
+      this.minStack.push(num);
+    } else {
+      this.dataStack.push(num);
+      if (num < this.minStack[this.minStack.length - 1]) {
+        this.minStack.push(num);
+      } else {
+        this.minStack.push(this.minStack[this.minStack.length - 1]);
+      }
+    }
+  }
+  pop() {
+    if (this.dataStack.length === 0) {
+      throw new Error('this stack is null');
+    }
+    this.minStack.pop();
+    return this.dataStack.pop();
+  }
+  getMin() {
+    if (this.dataStack.length === 0) {
+      throw new Error('this stack is null');
+    }
+    return this.minStack[this.minStack.length - 1];
+  }
+}
+
+function ques4() {
+  const stack = new Stack2();
+  stack.push(5);
+  stack.push(4);
+  stack.push(3);
+  stack.push(6);
+  stack.push(2);
+  stack.push(8);
+
+  console.log(stack.getMin()); //2
+  stack.pop();
+  console.log(stack.getMin()); //2
+  stack.pop();
+  console.log(stack.getMin()); //3
+}
+var permutation = function (s) {
+  if (s.length === 1) {
+    return [s];
+  } else {
+    const result = [];
+    const permuteResult = permutation(s.slice(1));
+    console.log(permuteResult);
+    console.log(s[0]);
+    for (let j = 0; j < permuteResult.length; j++) {
+      for (let k = 0; k < permuteResult[j].length + 1; k++) {
+        console.log(permuteResult[j]);
+        const newS =
+          permuteResult[j].slice(0, k) + s[0] + permuteResult[j].slice(k);
+        console.log(newS);
+        result.push(newS);
+      }
+    }
+    return result;
+  }
+};
+var movingCount = function (m, n, k) {
+  const sums = (x) => {
+    let ans = 0;
+    while (x) {
+      ans += x % 10;
+      x = Math.floor(x / 10);
+    }
+    return ans;
+  };
+  const set = new Set();
+  set.add(`(0, 0)`);
+  for (let i = 0; i < m; i++) {
+    for (let j = 0; j < n; j++) {
+      if (
+        (set.has(`(${i - 1}, ${j})`) || set.has(`(${i}, ${j - 1})`)) &&
+        sums(i) + sums(j) <= k
+      ) {
+        set.add(`(${i}, ${j})`);
+      }
+    }
+  }
+  return set.size;
+};
+console.log(movingCount(3, 2, 17));

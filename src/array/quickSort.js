@@ -53,9 +53,40 @@ const quickSort2 = (arr, start, end) => {
 空间复杂度:`O(logn)`（递归调用消耗）
 
 稳定性：不稳定 */
+
+const quickSort3 = (arr, start, end) => {
+  if (end - start < 1) {
+    return;
+  }
+  const target = arr[Math.floor(Math.random() * (end - start)) + start];
+  const p = mid(arr, start, end, target);
+  quickSort3(arr, start, p[0] - 1);
+  quickSort3(arr, p[1] + 1, end);
+  return arr;
+};
+const mid = (arr, l, r, target) => {
+  let i = l;
+  l = l - 1;
+  r = r + 1;
+  while (i < r) {
+    if (arr[i] < target) {
+      l++;
+      [arr[i], arr[l]] = [arr[l], arr[i]];
+      i++;
+    } else if (arr[i] === target) {
+      i++;
+    } else {
+      r--;
+      [arr[i], arr[r]] = [arr[r], arr[i]];
+    }
+  }
+  return [l + 1, r - 1];
+};
 //测试：
-const arr = [23, 45, 18, 37, 92, 13, 24];
-const res1 = quickSort1(arr);
-console.log('递归遍历的结果：' + res1);
-const res2 = quickSort2(arr, 0, arr.length - 1);
-console.log('非递归遍历的结果：' + res2);
+const arr = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
+// const res1 = quickSort1(arr);
+// console.log('递归遍历的结果：' + res1);
+// const res2 = quickSort2(arr, 0, arr.length - 1);
+// console.log('非递归遍历的结果：' + res2);
+const res3 = quickSort3(arr, 0, arr.length - 1);
+console.log('随机选择+非递归遍历的结果：' + res3);
