@@ -94,12 +94,13 @@ var postordertraversal = function (root, array = []) {
 var postordertraversal = (root) => {
   const arr = [];
   const postorder = (root) => {
-    if (!root) return null;
+    if (!root) return;
     postorder(root.left);
     postorder(root.right);
     arr.push(root.val);
   };
-  return postorder(root);
+  postorder(root);
+  return arr;
 };
 
 var postordertraversal = function (root) {

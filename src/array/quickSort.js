@@ -90,3 +90,4 @@ const arr = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
 // console.log('非递归遍历的结果：' + res2);
 const res3 = quickSort3(arr, 0, arr.length - 1);
 console.log('随机选择+非递归遍历的结果：' + res3);
+

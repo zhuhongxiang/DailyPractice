@@ -91,5 +91,5 @@ const merge2 = (array, left, mid, right) => {
 const arr = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
 const res1 = mergeSort1(arr);
 console.log('写法一的结果：' + res1);
-const res2 = mergeSort2(arr, 0, arr.length - 1, []);
+const res2 = mergeSort2(arr, 0, arr.length - 1);
 console.log('写法二的结果：' + res2);
